@@ -17,7 +17,8 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
   const [loading, setLoading]       = useState(true);
   const [headings, setHeadings]     = useState<HeadingItem[]>([]);
   const [saveState, setSaveState] = useState<"saved"|"saving"|"error">("saved");
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const titleSaveTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contentSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeNote   = notes.find(n => n.id === activeNoteId) || null;
 
   useEffect(() => { loadNotes(); }, []);
@@ -35,13 +36,9 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
     try {
       const note = await createNote("Untitled");
       setNotes(p => [...p, note]); setActiveId(note.id);
-    } catch {
-      const demo: Note = {
-        id: crypto.randomUUID(), title: "Untitled", content: "",
-        created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-        order_index: notes.length,
-      };
-      setNotes(p => [...p, demo]); setActiveId(demo.id);
+    } catch (e) {
+      console.error("Failed to create note:", e);
+      setSaveState("error");
     }
   }
 
@@ -60,18 +57,20 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
   const handleTitleChange = useCallback((id: string, title: string) => {
     setNotes(p => p.map(n => n.id === id ? { ...n, title } : n));
     setSaveState("saving");
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(async () => {
-      try { await updateNote(id, { title }); setSaveState("saved"); } catch { setSaveState("error"); }
+    if (titleSaveTimerRef.current) clearTimeout(titleSaveTimerRef.current);
+    titleSaveTimerRef.current = setTimeout(async () => {
+      try { await updateNote(id, { title }); setSaveState("saved"); }
+      catch (e) { console.error("Title save failed:", e); setSaveState("error"); }
     }, 1200);
   }, []);
 
   const handleContentChange = useCallback((id: string, content: string) => {
     setNotes(p => p.map(n => n.id === id ? { ...n, content } : n));
     setSaveState("saving");
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(async () => {
-      try { await updateNote(id, { content }); setSaveState("saved"); } catch { setSaveState("error"); }
+    if (contentSaveTimerRef.current) clearTimeout(contentSaveTimerRef.current);
+    contentSaveTimerRef.current = setTimeout(async () => {
+      try { await updateNote(id, { content }); setSaveState("saved"); }
+      catch (e) { console.error("Content save failed:", e); setSaveState("error"); }
     }, 1200);
   }, []);
 

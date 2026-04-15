@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent, Extension } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Heading from "@tiptap/extension-heading";
@@ -87,9 +87,7 @@ export default function NoteEditor({
   onContentChange,
   onHeadingsChange,
 }: NoteEditorProps) {
-  const [title, setTitle]       = useState(note.title);
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [title, setTitle] = useState(note.title);
   const titleSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Editor setup ────────────────────────────────────────────────────────────
@@ -118,11 +116,6 @@ export default function NoteEditor({
 
       // Propagate HTML content for save
       onContentChange(editor.getHTML());
-
-      // Autosave indicator
-      setSaveState("saving");
-      if (saveTimer.current) clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(() => setSaveState("saved"), 1400);
     },
     onTransaction({ editor }) {
       // Also update headings on any transaction (handles undo/redo/paste)
@@ -142,7 +135,6 @@ export default function NoteEditor({
     }
 
     setTitle(note.title);
-    setSaveState("idle");
 
     // Extract after content is set
     requestAnimationFrame(() => {
@@ -258,31 +250,6 @@ export default function NoteEditor({
                 placeholder="Note title"
               />
 
-              {/* Autosave pill */}
-              <div
-                className="flex items-center gap-2 shrink-0 pt-1.5"
-                style={{
-                  opacity: saveState === "idle" ? 0 : 1,
-                  transition: "opacity 0.4s",
-                }}
-              >
-                <div style={{
-                  width: 5, height: 5, borderRadius: "50%",
-                  background: saveState === "saved" ? "var(--c-cyan)" : "rgba(93,220,245,0.35)",
-                  boxShadow: saveState === "saved" ? "0 0 6px var(--c-cyan)" : "none",
-                  transition: "all 0.4s",
-                }} />
-                <span
-                  className="font-vault"
-                  style={{
-                    fontSize: "0.5rem", letterSpacing: "0.22em",
-                    color: saveState === "saved" ? "rgba(93,220,245,0.5)" : "rgba(93,220,245,0.28)",
-                    transition: "color 0.4s",
-                  }}
-                >
-                  {saveState === "saving" ? "SAVING" : "SAVED"}
-                </span>
-              </div>
             </div>
 
             {/* Toolbar */}
