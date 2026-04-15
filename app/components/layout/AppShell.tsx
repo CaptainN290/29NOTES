@@ -15,6 +15,7 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
   const [notes, setNotes]           = useState<Note[]>([]);
   const [activeNoteId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading]       = useState(true);
+  const [dbError, setDbError]       = useState<string | null>(null);
   const [headings, setHeadings]     = useState<HeadingItem[]>([]);
   const [saveState, setSaveState] = useState<"saved"|"saving"|"error">("saved");
   const titleSaveTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,7 +29,10 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
       const data = await fetchNotes();
       setNotes(data);
       if (data.length > 0) setActiveId(data[0].id);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      setDbError(String(e));
+    }
     finally { setLoading(false); }
   }
 
@@ -38,7 +42,7 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
       setNotes(p => [...p, note]); setActiveId(note.id);
     } catch (e) {
       console.error("Failed to create note:", e);
-      setSaveState("error");
+      setDbError(String(e));
     }
   }
 
@@ -166,7 +170,9 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
         />
 
         <div className="flex-1 overflow-hidden">
-          {activeNote ? (
+          {dbError ? (
+            <DbErrorState onRetry={() => { setDbError(null); setLoading(true); loadNotes(); }} />
+          ) : activeNote ? (
             <NoteEditor
               key={activeNote.id}
               note={activeNote}
@@ -234,6 +240,46 @@ function EmptyState({ onCreateNote, loading }: { onCreateNote: () => void; loadi
           + NEW NOTE
         </button>
       )}
+    </div>
+  );
+}
+
+function DbErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center gap-6 px-10">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 200 }}
+        style={{
+          width: 80, height: 80, borderRadius: 22,
+          background: "linear-gradient(160deg, rgba(140,30,30,0.4) 0%, rgba(100,20,20,0.5) 100%)",
+          boxShadow: "0 0 0 1px rgba(200,60,60,0.35), 0 6px 0 rgba(5,15,55,0.7), 0 10px 24px rgba(0,0,0,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="14" stroke="rgba(255,120,120,0.6)" strokeWidth="1.4"/>
+          <line x1="18" y1="10" x2="18" y2="20" stroke="rgba(255,120,120,0.8)" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="18" cy="25" r="1.5" fill="rgba(255,120,120,0.8)"/>
+        </svg>
+      </motion.div>
+
+      <div className="text-center max-w-sm">
+        <div className="font-vault mb-3"
+          style={{ fontSize: "0.7rem", letterSpacing: "0.3em", color: "rgba(255,120,120,0.7)" }}>
+          DATABASE NOT SET UP
+        </div>
+        <div className="font-body mb-4"
+          style={{ fontSize: "0.82rem", color: "rgba(150,180,220,0.6)", lineHeight: 1.6 }}>
+          The notes table doesn&apos;t exist in your Supabase database yet. Go to your Supabase dashboard, open the SQL Editor, and run the contents of{" "}
+          <span style={{ color: "rgba(93,220,245,0.7)", fontFamily: "monospace" }}>supabase-schema.sql</span>{" "}
+          from this project.
+        </div>
+        <button className="vault-btn" onClick={onRetry}
+          style={{ fontSize: "0.65rem", letterSpacing: "0.2em" }}>
+          RETRY CONNECTION
+        </button>
+      </div>
     </div>
   );
 }
