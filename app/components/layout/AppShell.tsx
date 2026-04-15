@@ -57,6 +57,15 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
     try { await updateNote(id, { title }); } catch { /* ignore */ }
   }
 
+  const handleTitleChange = useCallback((id: string, title: string) => {
+    setNotes(p => p.map(n => n.id === id ? { ...n, title } : n));
+    setSaveState("saving");
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      try { await updateNote(id, { title }); setSaveState("saved"); } catch { setSaveState("error"); }
+    }, 1200);
+  }, []);
+
   const handleContentChange = useCallback((id: string, content: string) => {
     setNotes(p => p.map(n => n.id === id ? { ...n, content } : n));
     setSaveState("saving");
@@ -110,7 +119,7 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
               color: "rgba(93,220,245,0.6)",
               textShadow: "0 0 10px rgba(93,220,245,0.25)",
             }}>
-            VAULT
+            29NOTES
           </div>
         </div>
 
@@ -163,6 +172,7 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
               key={activeNote.id}
               note={activeNote}
               scrollContainerId={SCROLL_ID}
+              onTitleChange={t => handleTitleChange(activeNote.id, t)}
               onContentChange={c => handleContentChange(activeNote.id, c)}
               onHeadingsChange={setHeadings}
             />

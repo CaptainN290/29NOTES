@@ -154,7 +154,7 @@ export default function Sidebar({
           style={{ borderTop: "1px solid rgba(40,90,180,0.18)" }}>
           <div className="font-vault"
             style={{ fontSize: "0.5rem", letterSpacing: "0.25em", color: "rgba(50,95,170,0.35)" }}>
-            VAULT v1
+            29NOTES v1
           </div>
           <div style={{
             width: 6, height: 6, borderRadius: "50%",

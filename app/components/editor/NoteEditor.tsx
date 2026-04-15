@@ -22,6 +22,7 @@ export type HeadingItem = {
 interface NoteEditorProps {
   note: Note;
   scrollContainerId: string;                         // ID of the outer scrollable div
+  onTitleChange: (title: string) => void;
   onContentChange: (html: string) => void;
   onHeadingsChange: (headings: HeadingItem[]) => void;
 }
@@ -82,16 +83,19 @@ function extractH1sFromEditor(editor: ReturnType<typeof useEditor>): HeadingItem
 export default function NoteEditor({
   note,
   scrollContainerId,
+  onTitleChange,
   onContentChange,
   onHeadingsChange,
 }: NoteEditorProps) {
   const [title, setTitle]       = useState(note.title);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const titleSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Editor setup ────────────────────────────────────────────────────────────
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: false, bulletList: false, listItem: false }),
       Heading.configure({ levels: [1, 2, 3] }),
@@ -245,7 +249,12 @@ export default function NoteEditor({
                   paddingBottom: 2,
                 }}
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={e => {
+                  const v = e.target.value;
+                  setTitle(v);
+                  if (titleSaveTimer.current) clearTimeout(titleSaveTimer.current);
+                  titleSaveTimer.current = setTimeout(() => onTitleChange(v), 800);
+                }}
                 placeholder="Note title"
               />
 

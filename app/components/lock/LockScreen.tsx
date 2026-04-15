@@ -137,7 +137,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
             </svg>
           </div>
 
-          {/* VAULT logotype */}
+          {/* 29NOTES logotype */}
           <div style={{ textAlign: "center" }}>
             <div className="font-vault"
               style={{
@@ -151,7 +151,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
                 `,
                 lineHeight: 1,
               }}>
-              VAULT
+              29NOTES
             </div>
             <div className="font-vault"
               style={{

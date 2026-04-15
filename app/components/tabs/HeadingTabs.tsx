@@ -117,12 +117,15 @@ export default function HeadingTabs({ headings, scrollContainerId }: HeadingTabs
     manualOverride.current = true;
     setTimeout(() => { manualOverride.current = false; }, 1000);
 
-    // Scroll target into view within the container
-    const containerTop = scrollContainer.getBoundingClientRect().top;
-    const targetTop    = target.getBoundingClientRect().top;
-    const offset       = targetTop - containerTop - 80; // 80px breathing room
+    // Walk up the offsetParent chain to get target's top relative to the scroll container
+    let el: HTMLElement | null = target;
+    let offsetTop = 0;
+    while (el && el !== scrollContainer) {
+      offsetTop += el.offsetTop;
+      el = el.offsetParent as HTMLElement | null;
+    }
 
-    scrollContainer.scrollBy({ top: offset, behavior: "smooth" });
+    scrollContainer.scrollTo({ top: offsetTop - 80, behavior: "smooth" });
 
     // Brief visual flash on the heading
     flashHeading(target);
