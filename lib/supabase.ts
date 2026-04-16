@@ -6,10 +6,12 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export type Note = {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
+  id:          string;
+  title:       string;
+  content:     string;
+  created_at:  string;
+  updated_at:  string;
   order_index: number;
+  pinned:      boolean;
+  color:       string | null;
 };

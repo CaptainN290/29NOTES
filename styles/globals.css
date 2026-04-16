@@ -452,6 +452,213 @@ html, body {
 }
 
 /* ─────────────────────────────────────────
+   EDITOR — ADDITIONAL ELEMENTS
+───────────────────────────────────────── */
+.ProseMirror s { color: var(--c-text-dim); opacity: 0.6; text-decoration: line-through; }
+
+.ProseMirror ol {
+  list-style: none;
+  padding-left: 1.6em;
+  margin: 0 0 0.8em 0;
+  counter-reset: vault-ol;
+}
+.ProseMirror ol li {
+  position: relative;
+  margin-bottom: 0.35em;
+  color: #C0DCFF;
+  counter-increment: vault-ol;
+}
+.ProseMirror ol li::before {
+  content: counter(vault-ol) ".";
+  position: absolute;
+  left: -1.5em;
+  color: var(--c-cyan-dim);
+  font-size: 0.8em;
+  font-family: "VaultFont", monospace;
+  letter-spacing: 0.04em;
+  top: 0.08em;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid rgba(93,220,245,0.35);
+  padding: 0.5em 0 0.5em 1.1em;
+  margin: 0.8em 0;
+  color: #90B8D8;
+  font-style: italic;
+  background: rgba(10,40,120,0.25);
+  border-radius: 0 8px 8px 0;
+}
+
+.ProseMirror pre {
+  background: rgba(4,12,44,0.85);
+  border: 1px solid rgba(40,100,200,0.35);
+  border-radius: 10px;
+  padding: 1em 1.2em;
+  margin: 0.8em 0;
+  overflow-x: auto;
+}
+.ProseMirror pre code {
+  font-family: "VaultFont", monospace;
+  font-size: 0.8em;
+  color: var(--c-cyan);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(40,100,200,0.4);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(93,220,245,0.1);
+  margin: 0.8em 0;
+  display: block;
+}
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid rgba(93,220,245,0.6);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────
+   SIDEBAR SEARCH INPUT
+───────────────────────────────────────── */
+.sidebar-search {
+  background: rgba(6,18,62,0.7);
+  border: 1px solid rgba(40,90,180,0.4);
+  border-radius: 10px;
+  padding: 7px 28px 7px 10px;
+  font-family: "VaultFont", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--c-accent);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.35);
+}
+.sidebar-search::placeholder {
+  color: rgba(60,110,180,0.3);
+  letter-spacing: 0.2em;
+}
+.sidebar-search:focus {
+  border-color: rgba(93,220,245,0.45);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.35), 0 0 0 2px rgba(93,220,245,0.08);
+}
+
+/* ─────────────────────────────────────────
+   SIDEBAR FOOTER BUTTONS
+───────────────────────────────────────── */
+.sidebar-footer-btn {
+  font-family: "VaultFont", monospace;
+  font-size: 0.46rem;
+  letter-spacing: 0.2em;
+  color: rgba(60,110,180,0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.sidebar-footer-btn:hover {
+  color: rgba(93,220,245,0.75);
+}
+
+/* ─────────────────────────────────────────
+   FOLDER TABS — NESTED H2 / H3
+───────────────────────────────────────── */
+.folder-tab-h2 {
+  font-family: "VaultFont", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  background: linear-gradient(270deg, rgba(10,30,100,0.0) 0%, rgba(14,42,130,0.75) 30%, rgba(18,52,150,0.8) 100%);
+  border: 1px solid rgba(45,100,190,0.4);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  padding: 6px 7px 6px 11px;
+  cursor: pointer;
+  display: block;
+  text-align: left;
+  color: rgba(150,200,240,0.65);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  position: relative;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.28), inset 0 1px 0 rgba(100,165,255,0.08);
+  transition: all 0.15s ease;
+}
+.folder-tab-h2:hover {
+  border-color: rgba(93,220,245,0.4);
+  color: var(--c-text-dim);
+  transform: translateX(-1px);
+}
+.folder-tab-h2.active-tab-h2 {
+  border-color: rgba(93,220,245,0.55);
+  color: var(--c-cyan-dim);
+  background: linear-gradient(270deg, rgba(10,30,100,0.0) 0%, rgba(26,72,190,0.85) 30%, rgba(32,85,210,0.9) 100%);
+  box-shadow: -3px 0 12px rgba(0,0,0,0.38), inset 0 1px 0 rgba(130,200,255,0.14), 0 0 10px rgba(93,220,245,0.12);
+  transform: translateX(-1px);
+}
+
+.folder-tab-h3 {
+  font-family: "VaultFont", monospace;
+  font-size: 0.46rem;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  background: linear-gradient(270deg, rgba(10,30,100,0.0) 0%, rgba(10,32,105,0.65) 30%, rgba(14,42,120,0.7) 100%);
+  border: 1px solid rgba(35,80,160,0.3);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  padding: 5px 6px 5px 10px;
+  cursor: pointer;
+  display: block;
+  text-align: left;
+  color: rgba(110,165,210,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 108px;
+  position: relative;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.22);
+  transition: all 0.15s ease;
+}
+.folder-tab-h3:hover {
+  border-color: rgba(93,220,245,0.3);
+  color: var(--c-text-dim);
+  transform: translateX(-1px);
+}
+.folder-tab-h3.active-tab-h3 {
+  border-color: rgba(93,220,245,0.4);
+  color: rgba(93,220,245,0.65);
+  background: linear-gradient(270deg, rgba(10,30,100,0.0) 0%, rgba(20,58,165,0.78) 30%, rgba(26,70,185,0.84) 100%);
+  box-shadow: -2px 0 10px rgba(0,0,0,0.32), 0 0 8px rgba(93,220,245,0.08);
+  transform: translateX(-1px);
+}
+
+/* ─────────────────────────────────────────
+   IMAGE URL INPUT
+───────────────────────────────────────── */
+.img-url-input {
+  background: rgba(6,18,62,0.8);
+  border: 1px solid rgba(40,90,180,0.45);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.78rem;
+  color: var(--c-text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.35);
+}
+.img-url-input::placeholder { color: rgba(60,110,180,0.35); }
+.img-url-input:focus {
+  border-color: rgba(93,220,245,0.45);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.35), 0 0 0 2px rgba(93,220,245,0.08);
+}
+
+/* ─────────────────────────────────────────
    SELECTION
 ───────────────────────────────────────── */
 ::selection {
