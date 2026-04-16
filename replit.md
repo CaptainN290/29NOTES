@@ -40,6 +40,14 @@ Run `supabase-schema.sql` in the Supabase SQL Editor. This creates the `notes` t
 - `lib/offlineCache.ts` — localStorage offline cache + update queue
 - `lib/snapshots.ts` — localStorage per-note backup snapshots
 
+## AI Assistant (SYNT)
+- Toggle with **SYNT·AI** button in the top bar
+- Requires `OPENAI_API_KEY` in Replit Secrets (uses `gpt-4o-mini`)
+- Components: `app/components/ai/AiPanel.tsx`, `app/api/ai/route.ts`
+- Streams responses; passes current note title + stripped HTML as context
+- Quick actions: SUMMARIZE, CONTINUE, KEY POINTS, CLEAN UP
+- Free-form chat with blinking cursor, green terminal aesthetic
+
 ## Features
 1. **Search** — Sidebar search filters by title and content in real-time
 2. **Pin notes** — Right-click → PIN; pinned notes float to top with ⊕ indicator

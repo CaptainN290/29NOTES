@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Sidebar from "@/app/components/sidebar/Sidebar";
 import NoteEditor from "@/app/components/editor/NoteEditor";
 import HeadingTabs from "@/app/components/tabs/HeadingTabs";
+import AiPanel from "@/app/components/ai/AiPanel";
 import { fetchNotes, createNote, updateNote, deleteNote, importNote } from "@/lib/notes";
 import { cacheNotes, getCachedNotes, enqueueOp, getQueue, clearQueue } from "@/lib/offlineCache";
 import { saveSnapshot } from "@/lib/snapshots";
@@ -15,13 +16,14 @@ import type { HeadingItem } from "@/app/components/editor/NoteEditor";
 const SCROLL_ID = "vault-editor-scroll";
 
 export default function AppShell({ onLogout }: { onLogout: () => void }) {
-  const [notes, setNotes]         = useState<Note[]>([]);
+  const [notes, setNotes]           = useState<Note[]>([]);
   const [activeNoteId, setActiveId] = useState<string | null>(null);
-  const [loading, setLoading]     = useState(true);
-  const [dbError, setDbError]     = useState<string | null>(null);
-  const [headings, setHeadings]   = useState<HeadingItem[]>([]);
-  const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
-  const [isOffline, setIsOffline] = useState(false);
+  const [loading, setLoading]       = useState(true);
+  const [dbError, setDbError]       = useState<string | null>(null);
+  const [headings, setHeadings]     = useState<HeadingItem[]>([]);
+  const [saveState, setSaveState]   = useState<"saved" | "saving" | "error">("saved");
+  const [isOffline, setIsOffline]   = useState(false);
+  const [aiOpen, setAiOpen]         = useState(false);
 
   const titleSaveTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -278,6 +280,18 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => { sounds.click(); setAiOpen(o => !o); }}
+            className="font-vault"
+            style={{
+              fontSize: "0.52rem", letterSpacing: "0.22em",
+              color: aiOpen ? "rgba(80,220,130,0.95)" : "rgba(93,220,245,0.65)",
+              textShadow: aiOpen ? "0 0 10px rgba(80,220,130,0.6)" : "none",
+              transition: "color 0.2s, text-shadow 0.2s",
+            }}>
+            SYNT·AI
+          </button>
+          <div style={{ width: 1, height: 14, background: "rgba(50,100,200,0.25)" }} />
           <button className="font-vault" onClick={async () => { await fetch("/api/auth", { method: "DELETE" }); onLogout(); }}
             style={{ fontSize: "0.52rem", letterSpacing: "0.22em", color: "rgba(93,220,245,0.65)" }}>LOCK</button>
           <div className="font-vault" style={{ fontSize: "0.52rem", letterSpacing: "0.22em", color: saveState === "error" ? "#ff8c8c" : "rgba(93,220,245,0.5)" }}>
@@ -333,6 +347,14 @@ export default function AppShell({ onLogout }: { onLogout: () => void }) {
 
       {/* Hidden import file input */}
       <input ref={importFileRef} type="file" accept=".json" className="hidden" onChange={handleImportFile} />
+
+      {/* ── AI Panel ── */}
+      <AiPanel
+        isOpen={aiOpen}
+        onClose={() => setAiOpen(false)}
+        noteTitle={activeNote?.title || ""}
+        noteContent={activeNote?.content || ""}
+      />
     </motion.div>
   );
 }
